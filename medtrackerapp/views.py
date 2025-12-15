@@ -53,7 +53,9 @@ class MedicationViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"], url_path="expected-doses")
     def expected_doses(self, request, pk=None):
-        # validate medication exists via self.get_object()
+        """
+            Calculate the expected number of doses over a given number of days.
+        """
         med = self.get_object()
 
         days_param = request.query_params.get("days")
