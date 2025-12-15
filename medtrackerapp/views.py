@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from django.utils.dateparse import parse_date
 from .models import Medication, DoseLog
 from .serializers import MedicationSerializer, DoseLogSerializer
+from .serializers import NoteSerializer
+from .models import Note
+from rest_framework import viewsets
 
 class MedicationViewSet(viewsets.ModelViewSet):
     """
@@ -53,7 +56,9 @@ class MedicationViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"], url_path="expected-doses")
     def expected_doses(self, request, pk=None):
-        # validate medication exists via self.get_object()
+        """
+            Calculate the expected number of doses over a given number of days.
+        """
         med = self.get_object()
 
         days_param = request.query_params.get("days")
@@ -141,3 +146,11 @@ class DoseLogViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(logs, many=True)
         return Response(serializer.data)
+
+class NoteViewSet(viewsets.ModelViewSet):
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+
+    def update(self, request, *args, **kwargs):
+        # disable update
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
