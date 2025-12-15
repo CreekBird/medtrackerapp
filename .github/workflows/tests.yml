@@ -50,24 +50,22 @@ jobs:
 
       - name: Apply migrations
         env:
-          env:
-            DJANGO_SETTINGS_MODULE: medtracker.settings
-            POSTGRES_DB: testdb
-            POSTGRES_USER: django
-            POSTGRES_PASSWORD: django
-            POSTGRES_HOST: localhost
-            POSTGRES_PORT: 5432
+          DJANGO_SETTINGS_MODULE: medtracker.settings
+          POSTGRES_DB: testdb
+          POSTGRES_USER: django
+          POSTGRES_PASSWORD: django
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
         run: |
           python manage.py migrate --noinput
 
       - name: Run tests
         env:
-          env:
-            DJANGO_SETTINGS_MODULE: medtracker.settings
-            POSTGRES_DB: testdb
-            POSTGRES_USER: django
-            POSTGRES_PASSWORD: django
-            POSTGRES_HOST: localhost
-            POSTGRES_PORT: 5432
+          DJANGO_SETTINGS_MODULE: medtracker.settings
+          POSTGRES_DB: testdb
+          POSTGRES_USER: django
+          POSTGRES_PASSWORD: django
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
         run: |
           python manage.py test medtrackerapp/tests
