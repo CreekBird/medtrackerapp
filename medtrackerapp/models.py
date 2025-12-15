@@ -49,6 +49,7 @@ class Medication(models.Model):
         Raises:
             ValueError: If days < 0 or prescribed_per_day ≤ 0.
         """
+        raise ValueError("intentional CI test error")
         if days < 0 or self.prescribed_per_day <= 0:
             raise ValueError("Days and schedule must be positive.")
         return days * self.prescribed_per_day
