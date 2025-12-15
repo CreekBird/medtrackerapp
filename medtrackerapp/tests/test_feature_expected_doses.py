@@ -11,7 +11,7 @@ class ExpectedDosesEndpointTests(TestCase):
         )
 
     def test_expected_doses_success(self):
-        url = f"/medications/{self.med.id}/expected-doses/?days=5"
+        url = f"/api/medications/{self.med.id}/expected-doses/?days=5"
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.json()
@@ -20,17 +20,17 @@ class ExpectedDosesEndpointTests(TestCase):
         self.assertEqual(data["expected_doses"], 10)
 
     def test_expected_doses_missing_days(self):
-        url = f"/medications/{self.med.id}/expected-doses/"
+        url = f"/api/medications/{self.med.id}/expected-doses/"
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_expected_doses_invalid_days_nonint(self):
-        url = f"/medications/{self.med.id}/expected-doses/?days=abc"
+        url = f"/api/medications/{self.med.id}/expected-doses/?days=abc"
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_expected_doses_invalid_days_negative(self):
-        url = f"/medications/{self.med.id}/expected-doses/?days=-1"
+        url = f"/api/medications/{self.med.id}/expected-doses/?days=-1"
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -38,6 +38,6 @@ class ExpectedDosesEndpointTests(TestCase):
         # Force the model's expected_doses to raise (simulate bad prescription)
         self.med.prescribed_per_day = 0
         self.med.save()
-        url = f"/medications/{self.med.id}/expected-doses/?days=5"
+        url = f"/api/medications/{self.med.id}/expected-doses/?days=5"
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
