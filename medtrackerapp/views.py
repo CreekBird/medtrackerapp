@@ -7,6 +7,8 @@ from .serializers import MedicationSerializer, DoseLogSerializer
 from .serializers import NoteSerializer
 from .models import Note
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter
+
 
 class MedicationViewSet(viewsets.ModelViewSet):
     """
@@ -150,6 +152,9 @@ class DoseLogViewSet(viewsets.ModelViewSet):
 class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
+
+    filter_backends = (SearchFilter,)
+    search_fields = ["medication__name"]
 
     def update(self, request, *args, **kwargs):
         # disable update
