@@ -17,7 +17,6 @@ schema_view = get_schema_view(
 )
 
 
-
 router = DefaultRouter()
 router.register("medications", MedicationViewSet, basename="medication")
 router.register("logs", DoseLogViewSet, basename="doselog")

@@ -9,7 +9,9 @@ from unittest.mock import patch
 
 class MedicationViewTests(APITestCase):
     def setUp(self):
-        self.med = Medication.objects.create(name="Aspirin", dosage_mg=100, prescribed_per_day=2)
+        self.med = Medication.objects.create(
+            name="Aspirin", dosage_mg=100, prescribed_per_day=2
+        )
 
     def test_list_medications_valid_data(self):
         """Test retrieving list of all medications (positive path)."""
@@ -33,11 +35,7 @@ class MedicationViewTests(APITestCase):
     def test_create_medication_valid_data(self):
         """Test creating a new medication with valid data (positive path)."""
         url = reverse("medication-list")
-        data = {
-            "name": "Ibuprofen",
-            "dosage_mg": 200,
-            "prescribed_per_day": 3
-        }
+        data = {"name": "Ibuprofen", "dosage_mg": 200, "prescribed_per_day": 3}
         response = self.client.post(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -57,11 +55,7 @@ class MedicationViewTests(APITestCase):
     def test_create_medication_invalid_data_types(self):
         """Test creating medication with invalid data types (negative path)."""
         url = reverse("medication-list")
-        data = {
-            "name": "TestMed",
-            "dosage_mg": "invalid",
-            "prescribed_per_day": 2
-        }
+        data = {"name": "TestMed", "dosage_mg": "invalid", "prescribed_per_day": 2}
         response = self.client.post(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -84,11 +78,7 @@ class MedicationViewTests(APITestCase):
     def test_update_medication_valid_data(self):
         """Test updating medication with valid data (positive path)."""
         url = reverse("medication-detail", args=[self.med.id])
-        data = {
-            "name": "Aspirin Updated",
-            "dosage_mg": 150,
-            "prescribed_per_day": 3
-        }
+        data = {"name": "Aspirin Updated", "dosage_mg": 150, "prescribed_per_day": 3}
         response = self.client.put(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -122,14 +112,14 @@ class MedicationViewTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    @patch('medtrackerapp.services.DrugInfoService.get_drug_info')
+    @patch("medtrackerapp.services.DrugInfoService.get_drug_info")
     def test_get_external_info_success(self, mock_get_drug_info):
         """Test fetching external drug info with successful API response (mocked)."""
         mock_response = {
             "name": "Aspirin",
             "manufacturer": "Bayer",
             "warnings": ["Keep out of reach of children"],
-            "purpose": ["Pain reliever"]
+            "purpose": ["Pain reliever"],
         }
         mock_get_drug_info.return_value = mock_response
 
@@ -141,7 +131,7 @@ class MedicationViewTests(APITestCase):
         self.assertEqual(response.data["manufacturer"], "Bayer")
         mock_get_drug_info.assert_called_once_with("Aspirin")
 
-    @patch('medtrackerapp.services.DrugInfoService.get_drug_info')
+    @patch("medtrackerapp.services.DrugInfoService.get_drug_info")
     def test_get_external_info_api_error(self, mock_get_drug_info):
         """Test fetching external drug info when API returns error (mocked)."""
         mock_get_drug_info.side_effect = ValueError("OpenFDA API error: 404")
@@ -156,11 +146,11 @@ class MedicationViewTests(APITestCase):
 
 class DoseLogViewTests(APITestCase):
     def setUp(self):
-        self.med = Medication.objects.create(name="Metformin", dosage_mg=500, prescribed_per_day=2)
+        self.med = Medication.objects.create(
+            name="Metformin", dosage_mg=500, prescribed_per_day=2
+        )
         self.log = DoseLog.objects.create(
-            medication=self.med,
-            taken_at=timezone.now(),
-            was_taken=True
+            medication=self.med, taken_at=timezone.now(), was_taken=True
         )
 
     def test_list_dose_logs_valid_data(self):
@@ -187,7 +177,7 @@ class DoseLogViewTests(APITestCase):
         data = {
             "medication": self.med.id,
             "taken_at": timezone.now().isoformat(),
-            "was_taken": False
+            "was_taken": False,
         }
         response = self.client.post(url, data, format="json")
 
@@ -197,10 +187,7 @@ class DoseLogViewTests(APITestCase):
     def test_create_dose_log_missing_medication(self):
         """Test creating dose log without medication (negative path)."""
         url = reverse("doselog-list")
-        data = {
-            "taken_at": timezone.now().isoformat(),
-            "was_taken": True
-        }
+        data = {"taken_at": timezone.now().isoformat(), "was_taken": True}
         response = self.client.post(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -212,7 +199,7 @@ class DoseLogViewTests(APITestCase):
         data = {
             "medication": 99999,
             "taken_at": timezone.now().isoformat(),
-            "was_taken": True
+            "was_taken": True,
         }
         response = self.client.post(url, data, format="json")
 
@@ -240,7 +227,7 @@ class DoseLogViewTests(APITestCase):
         data = {
             "medication": self.med.id,
             "taken_at": new_time.isoformat(),
-            "was_taken": False
+            "was_taken": False,
         }
         response = self.client.put(url, data, format="json")
 
@@ -260,9 +247,15 @@ class DoseLogViewTests(APITestCase):
         """Test filtering dose logs by valid date range (positive path)."""
         base_date = timezone.now().replace(hour=10, minute=0, second=0, microsecond=0)
 
-        DoseLog.objects.create(medication=self.med, taken_at=base_date - timedelta(days=5), was_taken=True)
-        DoseLog.objects.create(medication=self.med, taken_at=base_date - timedelta(days=3), was_taken=True)
-        DoseLog.objects.create(medication=self.med, taken_at=base_date - timedelta(days=1), was_taken=False)
+        DoseLog.objects.create(
+            medication=self.med, taken_at=base_date - timedelta(days=5), was_taken=True
+        )
+        DoseLog.objects.create(
+            medication=self.med, taken_at=base_date - timedelta(days=3), was_taken=True
+        )
+        DoseLog.objects.create(
+            medication=self.med, taken_at=base_date - timedelta(days=1), was_taken=False
+        )
 
         url = reverse("doselog-filter-by-date")
         start = (base_date - timedelta(days=3)).date().isoformat()

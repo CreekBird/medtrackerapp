@@ -3,11 +3,13 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from medtrackerapp.models import Medication
 
-class NotesFeatureTests(TestCase):
 
+class NotesFeatureTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.med = Medication.objects.create(name="NoteMed", dosage_mg=10, prescribed_per_day=1)
+        self.med = Medication.objects.create(
+            name="NoteMed", dosage_mg=10, prescribed_per_day=1
+        )
 
     def test_create_note(self):
         payload = {"medication": self.med.id, "text": "Doctor says rest"}
@@ -28,7 +30,9 @@ class NotesFeatureTests(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_note(self):
-        create = self.client.post("/api/notes/", {"medication": self.med.id, "text":"x"}, format="json")
+        create = self.client.post(
+            "/api/notes/", {"medication": self.med.id, "text": "x"}, format="json"
+        )
         nid = create.json()["id"]
         resp = self.client.delete(f"/api/notes/{nid}/")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)

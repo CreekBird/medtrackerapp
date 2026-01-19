@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils.dateparse import parse_date
@@ -26,6 +26,7 @@ class MedicationViewSet(viewsets.ModelViewSet):
         - DELETE /medications/{id}/ — delete a medication
         - GET /medications/{id}/info/ — fetch external drug info from OpenFDA
     """
+
     queryset = Medication.objects.all()
     serializer_class = MedicationSerializer
 
@@ -59,20 +60,29 @@ class MedicationViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"], url_path="expected-doses")
     def expected_doses(self, request, pk=None):
         """
-            Calculate the expected number of doses over a given number of days.
+        Calculate the expected number of doses over a given number of days.
         """
         med = self.get_object()
 
         days_param = request.query_params.get("days")
         if days_param is None:
-            return Response({"error": "days parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "days parameter is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             days = int(days_param)
         except (ValueError, TypeError):
-            return Response({"error": "days must be a positive integer"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "days must be a positive integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if days <= 0:
-            return Response({"error": "days must be a positive integer"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "days must be a positive integer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Call model method, catch ValueError
         try:
@@ -80,11 +90,11 @@ class MedicationViewSet(viewsets.ModelViewSet):
         except ValueError as exc:
             return Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({
-            "medication_id": med.id,
-            "days": days,
-            "expected_doses": expected
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {"medication_id": med.id, "days": days, "expected_doses": expected},
+            status=status.HTTP_200_OK,
+        )
+
 
 class DoseLogViewSet(viewsets.ModelViewSet):
     """
@@ -103,6 +113,7 @@ class DoseLogViewSet(viewsets.ModelViewSet):
         - GET /logs/filter/?start=YYYY-MM-DD&end=YYYY-MM-DD —
           filter logs within a date range
     """
+
     queryset = DoseLog.objects.all()
     serializer_class = DoseLogSerializer
 
@@ -128,8 +139,10 @@ class DoseLogViewSet(viewsets.ModelViewSet):
 
         if not start_str or not end_str:
             return Response(
-                {"error": "Both 'start' and 'end' query parameters are required and must be valid dates."},
-                status=status.HTTP_400_BAD_REQUEST
+                {
+                    "error": "Both 'start' and 'end' query parameters are required and must be valid dates."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         start = parse_date(start_str)
@@ -137,17 +150,21 @@ class DoseLogViewSet(viewsets.ModelViewSet):
 
         if not start or not end:
             return Response(
-                {"error": "Both 'start' and 'end' query parameters are required and must be valid dates."},
-                status=status.HTTP_400_BAD_REQUEST
+                {
+                    "error": "Both 'start' and 'end' query parameters are required and must be valid dates."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        logs = self.get_queryset().filter(
-            taken_at__date__gte=start,
-            taken_at__date__lte=end
-        ).order_by("taken_at")
+        logs = (
+            self.get_queryset()
+            .filter(taken_at__date__gte=start, taken_at__date__lte=end)
+            .order_by("taken_at")
+        )
 
         serializer = self.get_serializer(logs, many=True)
         return Response(serializer.data)
+
 
 class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()
