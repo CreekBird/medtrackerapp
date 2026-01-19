@@ -33,5 +33,5 @@ jobs:
       - name: Check if docs are up to date
         run: |
           git diff --exit-code openapi-schema.yml
-  env:
-  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
