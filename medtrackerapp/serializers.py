@@ -1,4 +1,3 @@
-from rest_framework import serializers
 from .models import Medication, DoseLog
 from rest_framework import serializers
 from .models import Note
